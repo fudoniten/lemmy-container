@@ -236,7 +236,7 @@ in {
     };
 
     virtualisation = {
-      oci-containers.lemmy = {
+      oci-containers.containers.lemmy = {
         environment = {
           LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
           LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
