@@ -4,6 +4,8 @@ with lib;
 let
   cfg = config.services.lemmyDocker;
 
+  hostSecrets = config.fudo.secrets.host-secrets."${config.instance.hostname}";
+
   lemmyDockerImage = { hostname, lemmyDockerImage, lemmyUiDockerImage
     , nginxCfgFile, pictrsApiKey, pictrsDockerImage, port, postgresDockerImage
     , postgresPasswd, smtpServer, stateDirectory, ... }:
