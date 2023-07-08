@@ -232,6 +232,7 @@ in {
           PICTRS__API_KEY=\"${pictrsApiKey}\"
           POSTGRES_PASSWORD=\"${postgresPassword}\"
         '';
+        target-file = "/run/lemmy-docker/env";
       };
     };
 
