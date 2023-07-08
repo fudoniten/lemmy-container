@@ -237,7 +237,7 @@ in {
       oci-containers.lemmy = {
         environment = {
           LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
-          LEMMY_UI_LEMMY_EXTERNAL_HOST = hostname;
+          LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
           LEMMY_UI_HTTPS = true;
           PICTRS_OPENTELEMETRY_URL = "http://otel:4137";
           RUST_LOG = "debug";
