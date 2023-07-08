@@ -120,7 +120,7 @@ let
           max-file = "4";
         };
       };
-    in pkgs.writeTextDir "docker-compose.yml" (toJSON {
+    in pkgs.writeTextDir "docker-compose.yml" (builtins.toJSON {
       version = "3.7";
 
       services = {
