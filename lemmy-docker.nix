@@ -25,7 +25,7 @@ let
       installPhase = "ls > $out";
     };
 
-  nginxCfg = pkgs.writeTextFile "lemmy-nginx.conf" ''
+  nginxCfg = pkgs.writeText "lemmy-nginx.conf" ''
     worker_processes auto;
 
     events {
@@ -228,7 +228,7 @@ in {
   in {
     fudo.secrets.host-secrets."${config.instance.hostname}" = {
       lemmyDockerEnv = {
-        source-file = pkgs.writeTextFile "lemmy-docker-env" ''
+        source-file = pkgs.writeText "lemmy-docker-env" ''
           PICTRS__API_KEY=\"${pictrsApiKey}\"
           POSTGRES_PASSWORD=\"${postgresPassword}\"
         '';
