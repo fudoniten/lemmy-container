@@ -22,7 +22,10 @@ let
       src = lemmyDockerComposeCfgDir;
       buildInputs = with pkgs; [ docker-compose ];
       buildPhase = "docker compose build";
-      installPhase = "ls > $out";
+      installPhase = ''
+        ls
+        exit 1
+      '';
     };
 
   nginxCfg = pkgs.writeText "lemmy-nginx.conf" ''
@@ -240,6 +243,7 @@ in {
       oci-containers.containers.lemmy = {
         # Not sure what the image should be...
         image = "lemmy/lemmy";
+        autoStart = true;
         environment = {
           LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
           LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
