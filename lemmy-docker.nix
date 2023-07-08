@@ -92,22 +92,23 @@ let
     }
   '';
 
-  lemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer, ... }: {
-    database = {
-      host = "postgres";
-      password = postgresPasswd;
-    };
-    hostname = hostname;
-    pictrs = {
-      url = "http://pictrs:8080/";
-      api_key = pictrsApiKey;
-    };
-    email = {
-      smtp_server = smtpServer;
-      tls_type = "none";
-      smtp_from_address = "noreply@${hostname}";
-    };
-  };
+  lemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer, ... }:
+    pkgs.writeText "lemmy.hjson" (builtins.toJSON {
+      database = {
+        host = "postgres";
+        password = postgresPasswd;
+      };
+      hostname = hostname;
+      pictrs = {
+        url = "http://pictrs:8080/";
+        api_key = pictrsApiKey;
+      };
+      email = {
+        smtp_server = smtpServer;
+        tls_type = "none";
+        smtp_from_address = "noreply@${hostname}";
+      };
+    });
 
   lemmyDockerComposeCfg = { hostname, port, lemmyCfgFile, nginxCfgFile
     , pictrsApiKey, stateDirectory, postgresPasswd, lemmyDockerImage
