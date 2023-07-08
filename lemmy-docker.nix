@@ -241,7 +241,7 @@ in {
         environment = {
           LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
           LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
-          LEMMY_UI_HTTPS = true;
+          LEMMY_UI_HTTPS = "false";
           PICTRS_OPENTELEMETRY_URL = "http://otel:4137";
           RUST_LOG = "debug";
           RUST_BACKTRACE = "full";
