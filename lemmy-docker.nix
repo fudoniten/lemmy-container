@@ -257,7 +257,7 @@ in {
             postgresDockerImage = cfg.docker-images.postgres;
             stateDirectory = cfg.state-directory;
             smtpServer = cfg.smtp-server;
-            inherit postgresPasswd nginxCfgFile;
+            inherit postgresPasswd pictrsApiKey nginxCfgFile;
           };
         in "${image}";
         autoStart = true;
