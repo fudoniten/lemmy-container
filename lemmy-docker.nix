@@ -2,6 +2,8 @@
 
 with lib;
 let
+  cfg = config.services.lemmyDocker;
+
   lemmyDockerImage = { hostname, lemmyDockerImage, lemmyUiDockerImage
     , nginxCfgFile, pictrsApiKey, pictrsDockerImage, port, postgresDockerImage
     , postgresPasswd, smtpServer, stateDirectory, ... }:
