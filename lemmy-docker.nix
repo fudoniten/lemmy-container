@@ -162,7 +162,7 @@ let
         proxy = {
           image = "nginx:1-alpine";
           ports = [ "${toString port}:8536" ];
-          volumes = [ "${nginxCfg}:/etc/nginx/nginx.conf:ro,Z" ];
+          volumes = [ "${nginxCfgFile}:/etc/nginx/nginx.conf:ro,Z" ];
           restart = "always";
           logging = defaultLogging;
         };
