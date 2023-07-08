@@ -230,7 +230,7 @@ in {
       lemmyDockerEnv = {
         source-file = pkgs.writeText "lemmy-docker-env" ''
           PICTRS__API_KEY=\"${pictrsApiKey}\"
-          POSTGRES_PASSWORD=\"${postgresPassword}\"
+          POSTGRES_PASSWORD=\"${postgresPasswd}\"
         '';
         target-file = "/run/lemmy-docker/env";
       };
