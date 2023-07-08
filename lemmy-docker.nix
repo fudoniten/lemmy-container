@@ -226,7 +226,7 @@ in {
     pictrsApiKey =
       readFile (pkgs.lib.passwd.random-passwd-file "lemmy-pictrs-api-key" 30);
   in {
-    fudo.secrets.host-secrets."${hostname}" = {
+    fudo.secrets.host-secrets."${config.instance.hostname}" = {
       lemmyDockerEnv = {
         source-file = writeTextFile "lemmy-docker-env" ''
           PICTRS__API_KEY=\"${pictrsApiKey}\"
