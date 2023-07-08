@@ -25,7 +25,7 @@ let
       installPhase = "ls > $out";
     };
 
-  nginxCfg = writeTextFile "lemmy-nginx.conf" ''
+  nginxCfg = builtins.writeTextFile "lemmy-nginx.conf" ''
     worker_processes auto;
 
     events {
@@ -117,7 +117,7 @@ let
           max-file = "4";
         };
       };
-    in writeTextDir "docker-compose.yml" (toJSON {
+    in builtins.writeTextDir "docker-compose.yml" (toJSON {
       version = "3.7";
 
       services = {
@@ -228,7 +228,7 @@ in {
   in {
     fudo.secrets.host-secrets."${config.instance.hostname}" = {
       lemmyDockerEnv = {
-        source-file = writeTextFile "lemmy-docker-env" ''
+        source-file = builtins.writeTextFile "lemmy-docker-env" ''
           PICTRS__API_KEY=\"${pictrsApiKey}\"
           POSTGRES_PASSWORD=\"${postgresPassword}\"
         '';
