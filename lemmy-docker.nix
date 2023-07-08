@@ -28,7 +28,7 @@ let
       '';
     };
 
-  nginxCfg = pkgs.writeText "lemmy-nginx.conf" ''
+  nginxCfgFile = pkgs.writeText "lemmy-nginx.conf" ''
     worker_processes auto;
 
     events {
@@ -196,6 +196,11 @@ in {
       description = "Directory at which to store application state.";
     };
 
+    smtp-server = mkOption {
+      type = str;
+      description = "SMTP server to use for outgoing messages.";
+    };
+
     docker-images = {
       lemmy = mkOption {
         type = str;
@@ -243,6 +248,18 @@ in {
       oci-containers.containers.lemmy = {
         # Not sure what the image should be...
         image = "lemmy/lemmy";
+        imageFile = let
+          image = lemmyDockerImage {
+            inherit (cfg) hostname port;
+            lemmyDockerImage = cfg.docker-images.lemmy;
+            lemmyUiDockerImage = cfg.docker-images.lemmy-ui;
+            pictrsDockerImage = cfg.docker-images.pictrs;
+            postgresDockerImage = cfg.docker-images.postgres;
+            stateDirectory = cfg.state-directory;
+            smtpServer = cfg.smtp-server;
+            inherit postgresPasswd nginxCfgFile;
+          };
+        in "${image}";
         autoStart = true;
         environment = {
           LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
