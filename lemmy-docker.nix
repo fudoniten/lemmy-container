@@ -184,11 +184,6 @@ in {
       description = "Lemmy version.";
     };
 
-    domain = mkOption {
-      type = str;
-      description = "Hostname at which Lemmy instance is reachable.";
-    };
-
     state-directory = mkOption {
       type = str;
       description = "Directory at which to store application state.";
@@ -198,16 +193,20 @@ in {
       lemmy = mkOption {
         type = str;
         description = "Docker image to use for Lemmy.";
+        default =
+          "dessalines/lemmy:${toplevel.config.services.lemmyDocker.version}";
       };
 
       lemmy-ui = mkOption {
         type = str;
         description = "Docker image to use for Lemmy UI.";
+        default =
+          "dessalines/lemmy-ui:${toplevel.config.services.lemmyDocker.version}";
       };
 
       pictrs = mkOption {
         type = str;
-        description = "Docker image to use for PictRs.";
+        description = "Docker image to use for PictRS.";
       };
 
       postgres = mkOption {
