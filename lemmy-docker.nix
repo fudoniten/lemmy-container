@@ -21,7 +21,7 @@ let
       name = "lemmy-docker-image";
       src = lemmyDockerComposeCfgDir;
       buildInputs = with pkgs; [ docker-compose ];
-      buildPhase = "docker compose build";
+      buildPhase = "docker-compose build";
       installPhase = ''
         ls
         exit 1
