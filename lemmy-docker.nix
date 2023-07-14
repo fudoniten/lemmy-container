@@ -1,3 +1,5 @@
+arion:
+
 { config, lib, pkgs, ... }@toplevel:
 
 with lib;
@@ -6,26 +8,76 @@ let
 
   hostSecrets = config.fudo.secrets.host-secrets."${config.instance.hostname}";
 
-  lemmyDockerImage = { hostname, lemmyDockerImage, lemmyUiDockerImage
-    , nginxCfgFile, pictrsApiKey, pictrsDockerImage, port, postgresDockerImage
-    , postgresCfg, postgresPasswd, smtpServer, stateDirectory, ... }:
-    let
-      lemmyCfgFile =
-        lemmyCfg { inherit hostname postgresPasswd pictrsApiKey smtpServer; };
-      lemmyDockerComposeCfgDir = lemmyDockerComposeCfg {
-        inherit hostname port lemmyCfgFile nginxCfgFile pictrsApiKey
-          stateDirectory postgresPasswd lemmyDockerImage lemmyUiDockerImage
-          pictrsDockerImage postgresDockerImage postgresCfg;
+  lemmyImage = { hostname, port, lemmyCfgFile, nginxCfgFile, postgresCfgFile
+    , lemmyDockerImage, lemmyUiDockerImage, pictrsDockerImage
+    , postgresDockerImage, stateDirectory, ... }:
+    { pkgs, ... }: {
+      project.name = "lemmy";
+      services = {
+        proxy = {
+          service = {
+            image = "nginx:1-alpine";
+            ports = [ "${port}:8536" ];
+            volumes = [ "${nginxCfgFile}:/etc/nginx/nginx.conf:ro,Z" ];
+            depends_on = [ "pictrs" "lemmy-ui" ];
+          };
+        };
+        lemmy = {
+          service = {
+            image = lemmyDockerImage;
+            hostname = "lemmy";
+            environment.RUST_LOG = "warn";
+            volumes = [ "${lemmyCfgFile}:/config/config.hjson:ro,Z" ];
+            depends_on = [ "postgres" "pictrs" ];
+          };
+        };
+        lemmy-ui = {
+          service = {
+            image = lemmyUiDockerImage;
+            hostname = "lemmy-ui";
+            environment = {
+              LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
+              LEMMY_UI_LEMMY_EXTERNAL_HOST = hostname;
+              LEMMY_UI_HTTPS = true;
+            };
+            depends_on = [ "lemmy" ];
+          };
+        };
+        pictrs = {
+          service = {
+            image = pictrsDockerImage;
+            hostname = "pictrs";
+            environment = {
+              PICTRS_OPENTELEMETRY_URL = "http://otel:4137";
+              PICTRS__API_KEY = "pictrsApiKey";
+              RUST_LOG = "debug";
+              RUST_BACKTRACE = "full";
+              PICTRS__MEDIA__VIDEO_CODEC = "vp9";
+              PICTRS__MEDIA__GIF__MAX_WIDTH = "256";
+              PICTRS__MEDIA__GIF__MAX_HEIGHT = "256";
+              PICTRS__MEDIA__GIF__MAX_AREA = "65536";
+              PICTRS__MEDIA__GIF__MAX_FRAME_COUNT = "400";
+            };
+            volumes = [ "${stateDirectory}/pictrs:/mnt:Z" ];
+            service.user = "991:991";
+          };
+        };
+        postgres = {
+          service = {
+            image = postgresDockerImage;
+            hostname = "postgres";
+            environment = {
+              POSTGRES_USER = "lemmy";
+              POSTGRES_PASSWORD = postgresPassword;
+              POSTGRES_DB = "lemmy";
+            };
+            volumes = [
+              "${stateDirectory}/postgres:/var/lib/postgresql/data:Z"
+              "${postgresCfg}:/etc/postgresql.conf"
+            ];
+          };
+        };
       };
-    in pkgs.stdenv.mkDerivation {
-      name = "lemmy-docker-image";
-      src = lemmyDockerComposeCfgDir;
-      buildInputs = with pkgs; [ docker-compose ];
-      buildPhase = "docker-compose build";
-      installPhase = ''
-        ls
-        exit 1
-      '';
     };
 
   nginxCfgFile = pkgs.writeText "lemmy-nginx.conf" ''
@@ -263,6 +315,8 @@ in {
     };
   };
 
+  imports = [ arion.nixosModule.arion ];
+
   config = mkIf cfg.enable (let
     postgresPasswd =
       readFile (pkgs.lib.passwd.random-passwd-file "lemmy-postgres-passwd" 30);
@@ -280,6 +334,13 @@ in {
     };
 
     virtualisation = {
+      arion = {
+        backend = "podman-socket";
+        projects.lemmy.settings = {
+
+        };
+      };
+
       oci-containers.containers.lemmy = {
         # Not sure what the image should be...
         image = "lemmy/lemmy";
