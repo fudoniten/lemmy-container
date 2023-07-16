@@ -361,7 +361,7 @@ in {
             };
             postgresCfg = {
               image = cfg.docker-images.postgres;
-              envFiles = hostSecrets.lemmyPostgresEnv.target-file;
+              envFile = hostSecrets.lemmyPostgresEnv.target-file;
               configFile = postgresCfgFile;
             };
           };
