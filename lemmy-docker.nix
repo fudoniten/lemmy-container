@@ -345,7 +345,7 @@ in {
                 inherit postgresPasswd pictrsApiKey;
                 smtpServer = cfg.smtp-server;
               };
-              envFile = [ (makeEnvFile { RUST_LOG = "warn"; }) ];
+              envFile = toString (makeEnvFile { RUST_LOG = "warn"; });
             };
             lemmyUiCfg = {
               image = cfg.docker-images.lemmy-ui;
