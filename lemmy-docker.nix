@@ -313,6 +313,7 @@ in {
           PICTRS__MEDIA__GIF__MAX_AREA = "65536";
           PICTRS__MEDIA__GIF__MAX_FRAME_COUNT = "400";
           RUST_LOG = "debug";
+          RUST_BACKTRACE = "full";
           PICTRS__API_KEY = pictrsApiKey;
         };
         target-file = "/run/lemmy/pictrs.env";
@@ -345,7 +346,10 @@ in {
                 inherit postgresPasswd pictrsApiKey;
                 smtpServer = cfg.smtp-server;
               };
-              envFile = toString (makeEnvFile { RUST_LOG = "warn"; });
+              envFile = toString (makeEnvFile {
+                RUST_LOG = "warn";
+                RUST_BACKTRACE = "full";
+              });
             };
             lemmyUiCfg = {
               image = cfg.docker-images.lemmy-ui;
