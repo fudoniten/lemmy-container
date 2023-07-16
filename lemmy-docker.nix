@@ -357,11 +357,11 @@ in {
             };
             pictrsCfg = {
               image = cfg.docker-images.pictrs;
-              envFile = hostSecrets.lemmy-pictrs-env-file.target-file;
+              envFile = hostSecrets.lemmyPictrsEnv.target-file;
             };
             postgresCfg = {
               image = cfg.docker-images.postgres;
-              envFiles = hostSecrets.lemmy-postgres-env-file.target-file;
+              envFiles = hostSecrets.lemmyPostgresEnv.target-file;
               configFile = postgresCfgFile;
             };
           };
