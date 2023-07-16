@@ -126,7 +126,7 @@ let
     }
   '';
 
-  lemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer, ... }:
+  makeLemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer, ... }:
     pkgs.writeText "lemmy.hjson" (builtins.toJSON {
       database = {
         host = "postgres";
@@ -340,7 +340,7 @@ in {
             };
             lemmyCfg = {
               image = cfg.docker-images.lemmy;
-              configFile = makeLemmyImage {
+              configFile = makeLemmyCfg {
                 inherit (cfg) hostname;
                 inherit postgresPasswd pictrsApiKey;
                 smtpServer = cfg.smtp-server;
