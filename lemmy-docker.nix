@@ -18,7 +18,7 @@ let
         proxy = {
           service = {
             image = proxyCfg.image;
-            ports = [ "${port}:8536" ];
+            ports = [ "${toString port}:8536" ];
             volumes = [ "${proxyCfg.configFile}:/etc/nginx/nginx.conf:ro,Z" ];
             depends_on = [ "pictrs" "lemmy-ui" ];
           };
