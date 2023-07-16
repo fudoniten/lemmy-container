@@ -27,7 +27,7 @@ let
           service = {
             image = lemmyCfg.image;
             hostname = "lemmy";
-            env_file = lemmyCfg.envFiles;
+            env_file = [ lemmyCfg.envFile ];
             volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
             depends_on = [ "postgres" "pictrs" ];
           };
@@ -45,7 +45,7 @@ let
             hostname = "pictrs";
             volumes = [ "${stateDirectory}/pictrs:/mnt:Z" ];
             service.user = "991:991";
-            env_file = pictrsCfg.envFiles;
+            env_file = [ pictrsCfg.envFile ];
           };
         };
         postgres = {
@@ -56,7 +56,7 @@ let
               "${stateDirectory}/postgres:/var/lib/postgresql/data:Z"
               "${postgresCfg.configFile}:/etc/postgresql.conf"
             ];
-            env_file = postgresCfg.envFiles;
+            env_file = [ postgresCfg.envFile ];
           };
         };
       };
@@ -345,25 +345,23 @@ in {
                 inherit postgresPasswd pictrsApiKey;
                 smtpServer = cfg.smtp-server;
               };
-              envFiles = [ (makeEnvFile { RUST_LOG = "warn"; }) ];
+              envFile = makeEnvFile { RUST_LOG = "warn"; };
             };
             lemmyUiCfg = {
               image = cfg.docker-images.lemmy-ui;
-              envFiles = [
-                (mkEnvFile {
-                  LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
-                  LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
-                  LEMMY_UI_HTTPS = true;
-                })
-              ];
+              envFile = makeEnvFile {
+                LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
+                LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
+                LEMMY_UI_HTTPS = true;
+              };
             };
             pictrsCfg = {
               image = cfg.docker-images.pictrs;
-              envFiles = [ host-secrets.lemmy-pictrs-env-file.target-file ];
+              envFile = host-secrets.lemmy-pictrs-env-file.target-file;
             };
             postgresCfg = {
               image = cfg.docker-images.postgres;
-              envFiles = [ hostSecrets.lemmy-postgres-env-file.target-file ];
+              envFiles = hostSecrets.lemmy-postgres-env-file.target-file;
               configFile = postgresCfgFile;
             };
           };
