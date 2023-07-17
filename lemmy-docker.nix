@@ -276,7 +276,7 @@ in {
         };
         target-file = "/run/lemmy/lemmy.hjson";
       };
-      lemmyNgnixCfg = {
+      lemmyNginxCfg = {
         source-file = nginxCfgFile;
         target-file = "/run/lemmy/nginx.conf";
       };
