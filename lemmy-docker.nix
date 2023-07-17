@@ -291,8 +291,10 @@ in {
       group = "lemmy-pictrs";
     };
 
-    systemd.tmpfiles.rules =
-      [ "d ${cfg.state-directory}/pictrs 0700 lemmy-pictrs - - -" ];
+    systemd.tmpfiles.rules = [
+      "d ${cfg.state-directory}/pictrs 0700 lemmy-pictrs root - -"
+      "d ${cfg.state-directory}/postgres 0700 root root - -"
+    ];
 
     virtualisation = {
       arion = {
