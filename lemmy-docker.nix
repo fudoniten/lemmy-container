@@ -47,7 +47,7 @@ let
             image = pictrsCfg.image;
             hostname = "pictrs";
             volumes = [ "${stateDirectory}/pictrs:/mnt:Z" ];
-            user = "${pictrsCfg.uid}:${pictrsCfg.uid}";
+            user = "${toString pictrsCfg.uid}:${toString pictrsCfg.uid}";
             env_file = [ pictrsCfg.envFile ];
             restart = "always";
           };
