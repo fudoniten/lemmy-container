@@ -76,16 +76,29 @@ let
 
     http {
       map "$request_method:$http_accept" $proxpass {
+        # If no explicit matches exists below, send traffic to lemmy-ui
         default "http://lemmy-ui";
+
+        # GET/HEAD requests that accepts ActivityPub or Linked Data JSON should go to lemmy.
+        #
+        # These requests are used by Mastodon and other fediverse instances to look up profile information,
+        # discover site information and so on.
         "~^(?:GET|HEAD):.*?application\/(?:activity|ld)\+json" "http://lemmy";
+
+        # All non-GET/HEAD requests should go to lemmy
+        #
+        # Rather than calling out POST, PUT, DELETE, PATCH, CONNECT and all the verbs manually
+        # we simply negate the GET|HEAD pattern from above and accept all possibly $http_accept values
         "~^(?!(GET|HEAD)).*:" "http://lemmy";
       }
 
       upstream lemmy {
+        # Must map to lemmy image
         server "lemmy:8536";
       }
 
       upstream lemmy-ui {
+        # Must map to lemmy-ui image
         server "lemmy-ui:1234";
       }
 
@@ -106,26 +119,30 @@ let
         add_header X-Content-Type-Options nosniff;
         add_header X-XSS-Protection "1; mode=block";
 
+        # Send actual client IP upstream
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # frontend general requests
         location / {
-          proxy_pass $proxpass;
-
-          rewrite ^(.+)/+$ $1 permanent;
-
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header Host $host;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass $proxpass;
+            rewrite ^(.+)/+$ $1 permanent;
         }
 
+        # security.txt
+        location = /.well-known/security.txt {
+            proxy_pass "http://lemmy-ui";
+        }
+
+        # backend
         location ~ ^/(api|pictrs|feeds|nodeinfo|.well-known) {
-          proxy_pass "http://lemmy";
+            proxy_pass "http://lemmy";
 
-          proxy_http_version 1.1;
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection "upgrade";
-
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header Host $host;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            # proxy common stuff
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
         }
       }
     }
