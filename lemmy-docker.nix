@@ -268,6 +268,22 @@ in {
         };
         target-file = "/run/lemmy/postgres.env";
       };
+      lemmyCfg = {
+        source-file = makeLemmyCfg {
+          inherit (cfg) hostname;
+          inherit postgresPasswd pictrsApiKey;
+          smtpServer = cfg.smtp-server;
+        };
+        target-file = "/run/lemmy/lemmy.hjson";
+      };
+      lemmyNgnixCfg = {
+        source-file = nginxCfgFile;
+        target-file = "/run/lemmy/nginx.conf";
+      };
+      lemmyPostgresCfg = {
+        source-file = postgresCfgFile;
+        target-file = "/var/lemmy/postgres.conf";
+      };
     };
 
     users.users.lemmy-pictrs = {
@@ -287,15 +303,11 @@ in {
             stateDirectory = cfg.state-directory;
             proxyCfg = {
               image = "nginx:1-alpine";
-              configFile = nginxCfgFile;
+              configFile = hostSecrets.lemmyNginxCfg.target-file;
             };
             lemmyCfg = {
               image = cfg.docker-images.lemmy;
-              configFile = makeLemmyCfg {
-                inherit (cfg) hostname;
-                inherit postgresPasswd pictrsApiKey;
-                smtpServer = cfg.smtp-server;
-              };
+              configFile = hostSecrets.lemmyCfg.target-file;
               envFile = toString (makeEnvFile {
                 RUST_LOG = "warn";
                 RUST_BACKTRACE = "full";
@@ -317,7 +329,7 @@ in {
             postgresCfg = {
               image = cfg.docker-images.postgres;
               envFile = hostSecrets.lemmyPostgresEnv.target-file;
-              configFile = postgresCfgFile;
+              configFile = hostSecrets.lemmyPostgresCfg.target-file;
             };
           };
         in { imports = [ lemmyImage ]; };
