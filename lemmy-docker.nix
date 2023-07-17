@@ -270,7 +270,10 @@ in {
       };
     };
 
-    users.users.lemmy-pictrs.isSystemUser = true;
+    users.users.lemmy-pictrs = {
+      isSystemUser = true;
+      group = "lemmy-pictrs";
+    };
 
     systemd.tmpfiles.rules =
       [ "d ${cfg.state-directory}/pictrs 0700 lemmy-pictrs - - -" ];
