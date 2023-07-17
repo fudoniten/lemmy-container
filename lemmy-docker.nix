@@ -20,7 +20,8 @@ let
             image = proxyCfg.image;
             ports = [ "${toString port}:8536" ];
             volumes = [ "${proxyCfg.configFile}:/etc/nginx/nginx.conf:ro,Z" ];
-            depends_on = [ "pictrs" "lemmy-ui" ];
+            depends_on = [ "lemmy" "lemmy-ui" "pictrs" ];
+            restart = "always";
           };
         };
         lemmy = {
@@ -30,6 +31,7 @@ let
             env_file = [ lemmyCfg.envFile ];
             volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
             depends_on = [ "postgres" "pictrs" ];
+            restart = "always";
           };
         };
         lemmy-ui = {
@@ -37,6 +39,7 @@ let
             image = lemmyUiCfg.image;
             hostname = "lemmy-ui";
             depends_on = [ "lemmy" ];
+            restart = "always";
           };
         };
         pictrs = {
@@ -44,8 +47,9 @@ let
             image = pictrsCfg.image;
             hostname = "pictrs";
             volumes = [ "${stateDirectory}/pictrs:/mnt:Z" ];
-            # user = "991:991";
+            user = "${pictrsCfg.uid}:${pictrsCfg.uid}";
             env_file = [ pictrsCfg.envFile ];
+            restart = "always";
           };
         };
         postgres = {
@@ -57,6 +61,7 @@ let
               "${postgresCfg.configFile}:/etc/postgresql.conf"
             ];
             env_file = [ postgresCfg.envFile ];
+            restart = "always";
           };
         };
       };
@@ -177,69 +182,6 @@ let
     # statement_timeout = 10000
   '';
 
-  lemmyDockerComposeCfg = { hostname, port, lemmyCfgFile, nginxCfgFile
-    , pictrsApiKey, stateDirectory, postgresPasswd, lemmyDockerImage
-    , lemmyUiDockerImage, pictrsDockerImage, postgresCfg, postgresDockerImage
-    , ... }:
-    let
-      defaultLogging = {
-        driver = "json-file";
-        options = {
-          max-size = "50m";
-          max-file = "4";
-        };
-      };
-    in pkgs.writeTextDir "docker-compose.yml" (builtins.toJSON {
-      version = "3.7";
-
-      services = {
-        proxy = {
-          image = "nginx:1-alpine";
-          ports = [ "${toString port}:8536" ];
-          volumes = [ "${nginxCfgFile}:/etc/nginx/nginx.conf:ro,Z" ];
-          restart = "always";
-          logging = defaultLogging;
-        };
-
-        lemmy = {
-          image = lemmyDockerImage;
-          hostname = "lemmy";
-          restart = "always";
-          logging = defaultLogging;
-          volumes = [ "${lemmyCfgFile}:/config/config.hjson:Z" ];
-          depends_on = [ "postgres" "pictrs" ];
-        };
-
-        lemmy-ui = {
-          image = lemmyUiDockerImage;
-          restart = "always";
-          logging = defaultLogging;
-          depends_on = [ "lemmy" ];
-        };
-
-        pictrs = {
-          image = pictrsDockerImage;
-          hostname = "pictrs";
-          restart = "always";
-          logging = defaultLogging;
-          user = "991:991";
-          volumes = [ "${stateDirectory}/pictrs:/mnt:Z" ];
-          deploy.resources.limits.memory = "690m";
-        };
-
-        postgres = {
-          image = postgresDockerImage;
-          hostname = "postgres";
-          restart = "always";
-          logging = defaultLogging;
-          volumes = [
-            "${stateDirectory}/database:/var/lib/postgresql/data:Z"
-            "${postgresCfg}:/etc/postgresql.conf"
-          ];
-        };
-      };
-    });
-
 in {
   options.services.lemmyDocker = with types; {
     enable = mkEnableOption "Enable Lemmy running in a Docker container.";
@@ -328,6 +270,11 @@ in {
       };
     };
 
+    users.users.lemmy-pictrs.isSystemUser = true;
+
+    systemd.tmpfiles.rules =
+      [ "d ${cfg.state-directory}/pictrs 0700 lemmy-pictrs - - -" ];
+
     virtualisation = {
       arion = {
         backend = "podman-socket";
@@ -362,6 +309,7 @@ in {
             pictrsCfg = {
               image = cfg.docker-images.pictrs;
               envFile = hostSecrets.lemmyPictrsEnv.target-file;
+              uid = config.users.users.lemmy-pictrs.uid;
             };
             postgresCfg = {
               image = cfg.docker-images.postgres;
