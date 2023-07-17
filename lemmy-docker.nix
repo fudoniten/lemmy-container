@@ -44,7 +44,7 @@ let
             image = pictrsCfg.image;
             hostname = "pictrs";
             volumes = [ "${stateDirectory}/pictrs:/mnt:Z" ];
-            user = "991:991";
+            # user = "991:991";
             env_file = [ pictrsCfg.envFile ];
           };
         };
