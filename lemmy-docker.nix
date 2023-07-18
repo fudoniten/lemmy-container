@@ -75,10 +75,10 @@ let
       worker_connections 1024;
     }
 
-    error_log /dev/stderr info;
-    access_log /dev/stdout info;
-
     http {
+      error_log /dev/stderr info;
+      access_log /dev/stdout info;
+
       map "$request_method:$http_accept" $proxpass {
         # If no explicit matches exists below, send traffic to lemmy-ui
         default "http://lemmy-ui";
