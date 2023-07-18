@@ -319,12 +319,12 @@ in {
     users.users = {
       lemmy-pictrs = {
         isSystemUser = true;
-        uid = 532;
+        uid = 986;
         group = "lemmy-pictrs";
       };
       lemmy-postgres = {
         isSystemUser = true;
-        uid = 533;
+        uid = 985;
         group = "lemmy-postgres";
       };
     };
