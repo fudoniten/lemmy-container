@@ -169,7 +169,7 @@ let
         tls_type = "none";
         smtp_from_address = "noreply@${hostname}";
       };
-      setup = mkIf (adminPasswd != null) {
+      setup = {
         admin_username = "admin";
         admin_password = adminPasswd;
       };
