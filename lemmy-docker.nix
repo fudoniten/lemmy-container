@@ -76,8 +76,8 @@ let
     }
 
     http {
-      error_log /dev/stderr info;
-      access_log /dev/stdout info;
+      error_log stderr info;
+      access_log stdout;
 
       map "$request_method:$http_accept" $proxpass {
         # If no explicit matches exists below, send traffic to lemmy-ui
