@@ -60,6 +60,7 @@ let
               "${stateDirectory}/postgres:/var/lib/postgresql/data:Z"
               "${postgresCfg.configFile}:/etc/postgresql.conf"
             ];
+            user = "${toString postgresCfg.uid}:${toString postgresCfg.uid}";
             env_file = [ postgresCfg.envFile ];
             restart = "always";
           };
@@ -306,9 +307,15 @@ in {
       };
     };
 
-    users.users.lemmy-pictrs = {
-      isSystemUser = true;
-      group = "lemmy-pictrs";
+    users.users = {
+      lemmy-pictrs = {
+        isSystemUser = true;
+        group = "lemmy-pictrs";
+      };
+      lemmy-postgres = {
+        isSystemUser = true;
+        group = "lemmy-postgres";
+      };
     };
 
     systemd.tmpfiles.rules = [
@@ -352,6 +359,7 @@ in {
               image = cfg.docker-images.postgres;
               envFile = hostSecrets.lemmyPostgresEnv.target-file;
               configFile = hostSecrets.lemmyPostgresCfg.target-file;
+              uid = config.users.users.lemmy-postgres.uid;
             };
           };
         in { imports = [ lemmyImage ]; };
