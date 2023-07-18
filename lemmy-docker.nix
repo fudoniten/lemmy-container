@@ -152,7 +152,7 @@ let
     }
   '';
 
-  makeLemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer
+  makeLemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer, siteName
     , adminPasswd ? null, ... }:
     pkgs.writeText "lemmy.hjson" (builtins.toJSON {
       database = {
@@ -172,6 +172,7 @@ let
       setup = {
         admin_username = "admin";
         admin_password = adminPasswd;
+        site_name = siteName;
       };
     });
 
@@ -215,6 +216,11 @@ in {
     hostname = mkOption {
       type = str;
       description = "Hostname at which this server is accessible.";
+    };
+
+    site-name = mkOption {
+      type = str;
+      description = "Name of this server.";
     };
 
     port = mkOption {
@@ -303,6 +309,7 @@ in {
           inherit postgresPasswd pictrsApiKey;
           smtpServer = cfg.smtp-server;
           adminPasswd = adminPasswd;
+          siteName = cfg.site-name;
         };
         target-file = "/run/lemmy/lemmy.hjson";
       };
