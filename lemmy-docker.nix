@@ -303,6 +303,14 @@ in {
         };
         target-file = "/run/lemmy/postgres.env";
       };
+      lemmyUiEnv = {
+        source-file = makeEnvFile {
+          LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
+          LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
+          LEMMY_UI_HTTPS = false;
+        };
+        target-file = "/run/lemmy/lemmy-ui.env";
+      };
       lemmyCfg = {
         source-file = makeLemmyCfg {
           inherit (cfg) hostname;
@@ -362,11 +370,7 @@ in {
             };
             lemmyUiCfg = {
               image = cfg.docker-images.lemmy-ui;
-              envFile = makeEnvFile {
-                LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
-                LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
-                LEMMY_UI_HTTPS = false;
-              };
+              envFile = hostSecrets.lemmyUiEnv.target-file;
             };
             pictrsCfg = {
               image = cfg.docker-images.pictrs;
