@@ -152,7 +152,8 @@ let
     }
   '';
 
-  makeLemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer, ... }:
+  makeLemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer
+    , adminPasswd ? null, ... }:
     pkgs.writeText "lemmy.hjson" (builtins.toJSON {
       database = {
         host = "postgres";
@@ -167,6 +168,10 @@ let
         smtp_server = smtpServer;
         tls_type = "none";
         smtp_from_address = "noreply@${hostname}";
+      };
+      setup = mkIf (adminPasswd != null) {
+        admin_username = "admin";
+        admin_password = adminPasswd;
       };
     });
 
@@ -265,6 +270,9 @@ in {
       readFile (pkgs.lib.passwd.random-passwd-file "lemmy-postgres-passwd" 30);
     pictrsApiKey =
       readFile (pkgs.lib.passwd.random-passwd-file "lemmy-pictrs-api-key" 30);
+    adminPasswd = readFile
+      (pkgs.lib.passwd.stablerandom-passwd-file "lemmy-admin-passwd"
+        config.build.build-seed);
   in {
     fudo.secrets.host-secrets."${config.instance.hostname}" = {
       lemmyPictrsEnv = {
@@ -294,6 +302,7 @@ in {
           inherit (cfg) hostname;
           inherit postgresPasswd pictrsApiKey;
           smtpServer = cfg.smtp-server;
+          adminPasswd = adminPasswd;
         };
         target-file = "/run/lemmy/lemmy.hjson";
       };
