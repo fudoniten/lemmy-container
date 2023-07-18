@@ -42,6 +42,7 @@ let
             hostname = "lemmy-ui";
             depends_on = [ "lemmy" ];
             restart = "always";
+            env_file = [ lemmyUiCfg.envFile ];
           };
         };
         pictrs = {
@@ -305,6 +306,13 @@ in {
         };
         target-file = "/run/lemmy/postgres.env";
       };
+      lemmyEnv = {
+        source-file = makeEnvFile {
+          RUST_LOG = "warn";
+          RUST_BACKTRACE = "full";
+        };
+        target-file = "/run/lemmy/lemmy.env";
+      };
       lemmyUiEnv = {
         source-file = makeEnvFile {
           LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
@@ -365,10 +373,7 @@ in {
             lemmyCfg = {
               image = cfg.docker-images.lemmy;
               configFile = hostSecrets.lemmyCfg.target-file;
-              envFile = toString (makeEnvFile {
-                RUST_LOG = "warn";
-                RUST_BACKTRACE = "full";
-              });
+              envFile = hostSecrets.lemmyEnv.target-file;
             };
             lemmyUiCfg = {
               image = cfg.docker-images.lemmy-ui;
