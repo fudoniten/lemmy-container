@@ -272,7 +272,7 @@ in {
       readFile (pkgs.lib.passwd.random-passwd-file "lemmy-pictrs-api-key" 30);
     adminPasswd = readFile
       (pkgs.lib.passwd.stablerandom-passwd-file "lemmy-admin-passwd"
-        config.build.build-seed);
+        config.instance.build-seed);
   in {
     fudo.secrets.host-secrets."${config.instance.hostname}" = {
       lemmyPictrsEnv = {
