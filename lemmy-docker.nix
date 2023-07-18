@@ -7,7 +7,9 @@ let
   hostSecrets = config.fudo.secrets.host-secrets."${config.instance.hostname}";
 
   makeEnvFile = envVars:
-    let envLines = mapAttrsToList (var: val: ''${var}="${val}"'') envVars;
+    let
+      envLines =
+        mapAttrsToList (var: val: ''${var}="${toString val}"'') envVars;
     in pkgs.writeText "envFile" (concatStringsSep "\n" envLines);
 
   makeLemmyImage = { port, stateDirectory, proxyCfg, lemmyCfg, lemmyUiCfg
