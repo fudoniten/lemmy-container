@@ -317,7 +317,7 @@ in {
         source-file = makeEnvFile {
           LEMMY_UI_LEMMY_INTERNAL_HOST = "lemmy:8536";
           LEMMY_UI_LEMMY_EXTERNAL_HOST = cfg.hostname;
-          LEMMY_UI_HTTPS = 0;
+          LEMMY_UI_HTTPS = 1;
         };
         target-file = "/run/lemmy/lemmy-ui.env";
       };
