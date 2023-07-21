@@ -292,8 +292,7 @@ in {
           PICTRS__MEDIA__GIF__MAX_HEIGHT = "256";
           PICTRS__MEDIA__GIF__MAX_AREA = "65536";
           PICTRS__MEDIA__GIF__MAX_FRAME_COUNT = "400";
-          RUST_LOG = "debug";
-          RUST_BACKTRACE = "full";
+          RUST_LOG = "error";
           PICTRS__API_KEY = pictrsApiKey;
         };
         target-file = "/run/lemmy/pictrs.env";
@@ -307,10 +306,7 @@ in {
         target-file = "/run/lemmy/postgres.env";
       };
       lemmyEnv = {
-        source-file = makeEnvFile {
-          RUST_LOG = "warn";
-          RUST_BACKTRACE = "full";
-        };
+        source-file = makeEnvFile { RUST_LOG = "error"; };
         target-file = "/run/lemmy/lemmy.env";
       };
       lemmyUiEnv = {
