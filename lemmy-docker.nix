@@ -356,39 +356,36 @@ in {
     ];
 
     virtualisation = {
-      arion = {
-        backend = "podman-socket";
-        projects.lemmy.settings = let
-          lemmyImage = makeLemmyImage {
-            port = cfg.port;
-            stateDirectory = cfg.state-directory;
-            proxyCfg = {
-              image = "nginx:1-alpine";
-              configFile = hostSecrets.lemmyNginxCfg.target-file;
-            };
-            lemmyCfg = {
-              image = cfg.docker-images.lemmy;
-              configFile = hostSecrets.lemmyCfg.target-file;
-              envFile = hostSecrets.lemmyEnv.target-file;
-            };
-            lemmyUiCfg = {
-              image = cfg.docker-images.lemmy-ui;
-              envFile = hostSecrets.lemmyUiEnv.target-file;
-            };
-            pictrsCfg = {
-              image = cfg.docker-images.pictrs;
-              envFile = hostSecrets.lemmyPictrsEnv.target-file;
-              uid = config.users.users.lemmy-pictrs.uid;
-            };
-            postgresCfg = {
-              image = cfg.docker-images.postgres;
-              envFile = hostSecrets.lemmyPostgresEnv.target-file;
-              configFile = hostSecrets.lemmyPostgresCfg.target-file;
-              uid = config.users.users.lemmy-postgres.uid;
-            };
+      arion.projects.lemmy.settings = let
+        lemmyImage = makeLemmyImage {
+          port = cfg.port;
+          stateDirectory = cfg.state-directory;
+          proxyCfg = {
+            image = "nginx:1-alpine";
+            configFile = hostSecrets.lemmyNginxCfg.target-file;
           };
-        in { imports = [ lemmyImage ]; };
-      };
+          lemmyCfg = {
+            image = cfg.docker-images.lemmy;
+            configFile = hostSecrets.lemmyCfg.target-file;
+            envFile = hostSecrets.lemmyEnv.target-file;
+          };
+          lemmyUiCfg = {
+            image = cfg.docker-images.lemmy-ui;
+            envFile = hostSecrets.lemmyUiEnv.target-file;
+          };
+          pictrsCfg = {
+            image = cfg.docker-images.pictrs;
+            envFile = hostSecrets.lemmyPictrsEnv.target-file;
+            uid = config.users.users.lemmy-pictrs.uid;
+          };
+          postgresCfg = {
+            image = cfg.docker-images.postgres;
+            envFile = hostSecrets.lemmyPostgresEnv.target-file;
+            configFile = hostSecrets.lemmyPostgresCfg.target-file;
+            uid = config.users.users.lemmy-postgres.uid;
+          };
+        };
+      in { imports = [ lemmyImage ]; };
     };
 
     services.nginx = {
