@@ -350,10 +350,16 @@ in {
       };
     };
 
-    systemd.tmpfiles.rules = [
-      "d ${cfg.state-directory}/pictrs 0700 lemmy-pictrs root - -"
-      "d ${cfg.state-directory}/postgres 0700 lemmy-postgres root - -"
-    ];
+    systemd = {
+      services.arion-lemmy = {
+        after = [ "network-online.target" ];
+        requires = [ "network-online.target" ];
+      };
+      tmpfiles.rules = [
+        "d ${cfg.state-directory}/pictrs 0700 lemmy-pictrs root - -"
+        "d ${cfg.state-directory}/postgres 0700 lemmy-postgres root - -"
+      ];
+    };
 
     virtualisation = {
       arion.projects.lemmy.settings = let
