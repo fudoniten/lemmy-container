@@ -275,8 +275,9 @@ in {
   };
 
   config = mkIf cfg.enable (let
-    postgresPasswd =
-      readFile (pkgs.lib.passwd.random-passwd-file "lemmy-postgres-passwd" 30);
+    postgresPasswd = readFile
+      (pkgs.lib.passwd.stablerandom-passwd-file "lemmy-postgres-passwd"
+        config.instance.build-seed);
     pictrsApiKey =
       readFile (pkgs.lib.passwd.random-passwd-file "lemmy-pictrs-api-key" 30);
     adminPasswd = readFile
