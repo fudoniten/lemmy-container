@@ -353,8 +353,8 @@ in {
 
     systemd = {
       services.arion-lemmy = {
-        after = [ "network-online.target" ];
-        requires = [ "network-online.target" ];
+        after = [ "network-online.target" "podman.service" ];
+        requires = [ "network-online.target" "podman.service" ];
       };
       tmpfiles.rules = [
         "d ${cfg.state-directory}/pictrs 0700 lemmy-pictrs root - -"
