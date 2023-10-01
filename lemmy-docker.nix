@@ -66,6 +66,13 @@ let
             user = "${toString postgresCfg.uid}:${toString postgresCfg.uid}";
             env_file = [ postgresCfg.envFile ];
             restart = "always";
+            healthcheck = {
+              test = [ "CMD" "pg_isready" "-U" "lemmy" "-d" "lemmy" ];
+              start_period = "20s";
+              interval = "30s";
+              retries = 5;
+              timeout = "3s";
+            };
           };
         };
       };
