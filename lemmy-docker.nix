@@ -162,14 +162,16 @@ let
     }
   '';
 
-  makeLemmyCfg = { hostname, postgresPasswd, pictrsApiKey, smtpServer, siteName
-    , adminPasswd ? null, ... }:
+  makeLemmyCfg = { hostname, port, listenAddr, postgresPasswd, pictrsApiKey
+    , smtpServer, siteName, adminPasswd ? null, ... }:
     pkgs.writeText "lemmy.hjson" (builtins.toJSON {
       database = {
         host = "postgres";
         password = postgresPasswd;
       };
       hostname = hostname;
+      port = port;
+      bind = listenAddr;
       pictrs = {
         url = "http://pictrs:8080/";
         api_key = pictrsApiKey;
@@ -332,6 +334,8 @@ in {
           smtpServer = cfg.smtp-server;
           adminPasswd = adminPasswd;
           siteName = cfg.site-name;
+          listenAddr = "0.0.0.0";
+          port = 8536;
         };
         target-file = "/run/lemmy/lemmy.hjson";
       };
@@ -412,13 +416,6 @@ in {
             proxyPass = "http://localhost:${toString cfg.port}";
             proxyWebsockets = true;
             recommendedProxySettings = true;
-            # extraConfig = ''
-            #   proxy_set_header Host $host;
-            #   proxy_set_header Upgrade $http_upgrade;
-            #   proxy_set_header Connection "Upgrade";
-            #   proxy_set_header X-Real-IP $remote_addr;
-            #   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            # '';
           };
         };
       };
