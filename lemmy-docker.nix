@@ -132,6 +132,8 @@ let
         server_name localhost;
         server_tokens off;
 
+        client_body_buffer_size 1024m;
+
         gzip on;
         gzip_types text/css application/javascript image/svg+xml;
         gzip_vary on;
