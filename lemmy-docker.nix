@@ -34,7 +34,7 @@ let
         lemmy = {
           service = {
             image = lemmyCfg.image;
-            networks = [ "internal_network" ];
+            networks = [ "internal_network" "external_network" ];
             hostname = "lemmy";
             env_file = [ lemmyCfg.envFile ];
             volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
