@@ -55,7 +55,7 @@ let
         pictrs = {
           service = {
             image = pictrsCfg.image;
-            networks = [ "internal_network" ];
+            networks = [ "internal_network" "external_network" ];
             hostname = "pictrs";
             volumes = [ "${stateDirectory}/pictrs:/mnt:Z" ];
             user = "${toString pictrsCfg.uid}:${toString pictrsCfg.uid}";
