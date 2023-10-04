@@ -16,10 +16,15 @@ let
     , pictrsCfg, postgresCfg, ... }:
     { pkgs, ... }: {
       project.name = "lemmy";
+      networks = {
+        internal_network.internal = true;
+        external_network.internal = false;
+      };
       services = {
         proxy = {
           service = {
             image = proxyCfg.image;
+            networks = [ "internal_network" "external_network" ];
             ports = [ "${toString port}:8536" ];
             volumes = [ "${proxyCfg.configFile}:/etc/nginx/nginx.conf:ro,Z" ];
             depends_on = [ "lemmy" "lemmy-ui" "pictrs" ];
@@ -29,6 +34,7 @@ let
         lemmy = {
           service = {
             image = lemmyCfg.image;
+            networks = [ "internal_network" ];
             hostname = "lemmy";
             env_file = [ lemmyCfg.envFile ];
             volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
@@ -39,6 +45,7 @@ let
         lemmy-ui = {
           service = {
             image = lemmyUiCfg.image;
+            networks = [ "internal_network" ];
             hostname = "lemmy-ui";
             depends_on = [ "lemmy" ];
             restart = "always";
@@ -48,6 +55,7 @@ let
         pictrs = {
           service = {
             image = pictrsCfg.image;
+            networks = [ "internal_network" ];
             hostname = "pictrs";
             volumes = [ "${stateDirectory}/pictrs:/mnt:Z" ];
             user = "${toString pictrsCfg.uid}:${toString pictrsCfg.uid}";
@@ -58,6 +66,7 @@ let
         postgres = {
           service = {
             image = postgresCfg.image;
+            networks = [ "internal_network" ];
             hostname = "postgres";
             volumes = [
               "${stateDirectory}/postgres:/var/lib/postgresql/data:Z"
