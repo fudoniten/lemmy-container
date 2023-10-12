@@ -39,8 +39,8 @@ let
             env_file = [ lemmyCfg.envFile ];
             volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
             depends_on = {
-              postgres = "healthy";
-              pictrs = "healthy";
+              postgres.condition = "healthy";
+              pictrs.condition = "healthy";
             };
             restart = "always";
           };
