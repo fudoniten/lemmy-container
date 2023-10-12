@@ -27,7 +27,7 @@ let
             networks = [ "internal_network" "external_network" ];
             ports = [ "${toString port}:8536" ];
             volumes = [ "${proxyCfg.configFile}:/etc/nginx/nginx.conf:ro,Z" ];
-            depends_on = [ "lemmy" "lemmy-ui" "pictrs" ];
+            depends_on = [ "lemmy" "lemmy-ui" ];
             restart = "always";
           };
         };
@@ -39,8 +39,8 @@ let
             env_file = [ lemmyCfg.envFile ];
             volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
             depends_on = {
-              postgres.condition = "healthy";
-              pictrs.condition = "healthy";
+              postgres.condition = "service_healthy";
+              pictrs.condition = "service_healthy";
             };
             restart = "always";
           };
