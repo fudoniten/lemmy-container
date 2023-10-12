@@ -38,8 +38,10 @@ let
             hostname = "lemmy";
             env_file = [ lemmyCfg.envFile ];
             volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
-            depends_on =
-              [ { "postgres".condition = "service_healthy"; } "pictrs" ];
+            depends_on = {
+              postgres = "healthy";
+              pictrs = "healthy";
+            };
             restart = "always";
           };
         };
@@ -62,6 +64,10 @@ let
             user = "${toString pictrsCfg.uid}:${toString pictrsCfg.uid}";
             env_file = [ pictrsCfg.envFile ];
             restart = "always";
+            healthcheck.test = [
+              "CMD-SHELL"
+              "wget -q --spider --proxy=off localhost:/healthz || exit 1"
+            ];
           };
         };
         postgres = {
