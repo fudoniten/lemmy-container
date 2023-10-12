@@ -66,7 +66,7 @@ let
             restart = "always";
             healthcheck.test = [
               "CMD-SHELL"
-              "wget -q --spider --proxy=off localhost:8080/healthz || exit 1"
+              "wget -q --spider --proxy=off http://pictrs:8080/healthz || exit 1"
             ];
           };
         };
