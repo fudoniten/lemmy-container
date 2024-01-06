@@ -367,16 +367,22 @@ in {
       };
     };
 
-    users.users = {
-      lemmy-pictrs = {
-        isSystemUser = true;
-        uid = 986;
-        group = "lemmy-pictrs";
+    users = {
+      users = {
+        lemmy-pictrs = {
+          isSystemUser = true;
+          uid = 986;
+          group = "lemmy-pictrs";
+        };
+        lemmy-postgres = {
+          isSystemUser = true;
+          uid = 985;
+          group = "lemmy-postgres";
+        };
       };
-      lemmy-postgres = {
-        isSystemUser = true;
-        uid = 985;
-        group = "lemmy-postgres";
+      groups = {
+        lemmy-pictrs = { members = [ "lemmy-pictrs" ]; };
+        lemmy-postgres = { members = [ "lemmy-postgres" ]; };
       };
     };
 
