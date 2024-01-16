@@ -334,7 +334,10 @@ in {
         target-file = "/run/lemmy/postgres.env";
       };
       lemmyEnv = {
-        source-file = makeEnvFile { RUST_LOG = "error"; };
+        source-file = makeEnvFile {
+          RUST_LOG = "error";
+          RUST_BACKTRACE = "1";
+        };
         target-file = "/run/lemmy/lemmy.env";
       };
       lemmyUiEnv = {
