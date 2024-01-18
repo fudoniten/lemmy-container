@@ -37,7 +37,7 @@ let
             networks = [ "internal_network" "external_network" ];
             hostname = "lemmy";
             env_file = [ lemmyCfg.envFile ];
-            volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
+            volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro" ];
             depends_on = {
               postgres.condition = "service_healthy";
               pictrs.condition = "service_healthy";
