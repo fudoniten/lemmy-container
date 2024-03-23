@@ -37,7 +37,7 @@ let
             networks = [ "internal_network" "external_network" ];
             hostname = "lemmy";
             env_file = [ lemmyCfg.envFile ];
-            volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro" ];
+            volumes = [ "${lemmyCfg.configFile}:/config/config.hjson:ro,Z" ];
             depends_on = {
               postgres.condition = "service_healthy";
               pictrs.condition = "service_healthy";
@@ -334,10 +334,7 @@ in {
         target-file = "/run/lemmy/postgres.env";
       };
       lemmyEnv = {
-        source-file = makeEnvFile {
-          RUST_LOG = "error";
-          RUST_BACKTRACE = "1";
-        };
+        source-file = makeEnvFile { RUST_LOG = "error"; };
         target-file = "/run/lemmy/lemmy.env";
       };
       lemmyUiEnv = {
